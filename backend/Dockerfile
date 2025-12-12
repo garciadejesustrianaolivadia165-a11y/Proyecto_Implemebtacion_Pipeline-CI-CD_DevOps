@@ -1,0 +1,17 @@
+FROM node:18
+
+WORKDIR /usr/src/app
+
+# Copiar dependencias del backend
+COPY backend/package*.json ./
+RUN npm install
+
+# Copiar código del backend
+COPY backend/ ./
+
+# Copiar archivos del frontend
+COPY frontend /usr/src/frontend
+
+EXPOSE 3000
+
+CMD ["node", "src/app.js"]
