@@ -1,15 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const healthRouter = require('./routes/health');
+const apiRouter = require('./routes/index');
 
 const app = express();
 app.use(bodyParser.json());
 
+// Servir archivos estáticos del frontend
+app.use(express.static(path.join(__dirname, '../../frontend')));
+
 app.use('/api/health', healthRouter);
+app.use('/api', apiRouter);
 
 // endpoint simple
 app.get('/', (req, res) => {
-  res.sendFile(require('path').resolve(__dirname, '../../frontend/index.html'));
+  res.sendFile(path.join(__dirname, '../../frontend/index.html'));
 });
 
 const port = process.env.PORT || 3000;
