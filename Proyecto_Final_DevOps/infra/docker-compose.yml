@@ -3,7 +3,9 @@ version: "3.8"
 services:
 
   app:
-    build: ../backend
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
     container_name: devops_app
     ports:
       - "3000:3000"

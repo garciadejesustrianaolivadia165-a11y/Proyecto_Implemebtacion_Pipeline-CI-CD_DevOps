@@ -1,0 +1,402 @@
+﻿# Manual de Operaciones
+
+## Operaciones Diarias
+
+### Inicio del Sistema
+
+#### Desarrollo Local
+```bash
+# Iniciar backend
+cd backend
+npm run dev
+
+# El frontend se sirve automáticamente en http://localhost:3000
+```
+
+#### Docker (Producción)
+```bash
+cd infra
+docker-compose up -d
+```
+
+### Verificación de Salud
+```bash
+# Health check
+curl http://localhost:3000/api/health
+
+# Respuesta esperada:
+{
+  "status": "ok",
+  "message": "Service is healthy",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+## Monitoreo
+
+### Prometheus
+**URL**: http://localhost:9090
+
+#### Métricas Disponibles
+- `nodejs_active_requests`: Peticiones activas
+- `nodejs_heap_size_used_bytes`: Memoria heap usada
+- `http_request_duration_seconds`: Duración de requests
+
+#### Queries Útiles
+```promql
+# Peticiones por segundo
+rate(http_requests_total[5m])
+
+# Uso de memoria
+nodejs_heap_size_used_bytes / 1024 / 1024
+
+# Uptime
+time() - nodejs_process_start_time_seconds
+```
+
+### Logs
+
+#### Ver logs del contenedor
+```bash
+# Todos los servicios
+docker-compose logs -f
+
+# Solo la app
+docker-compose logs -f app
+
+# Solo MongoDB
+docker-compose logs -f db
+
+# Solo Prometheus
+docker-compose logs -f prometheus
+```
+
+#### Logs con timestamp
+```bash
+docker-compose logs -f -t app
+```
+
+## Base de Datos
+
+### Conectarse a MongoDB
+```bash
+# Desde host
+mongo mongodb://localhost:27017/devops_demo
+
+# Desde contenedor
+docker exec -it mongodb mongosh
+```
+
+### Comandos MongoDB útiles
+```javascript
+// Ver bases de datos
+show dbs
+
+// Usar base de datos
+use devops_demo
+
+// Ver colecciones
+show collections
+
+// Contar documentos
+db.users.countDocuments()
+
+// Ver todos los usuarios
+db.users.find().pretty()
+
+// Limpiar colección
+db.users.deleteMany({})
+```
+
+### Backup de MongoDB
+```bash
+# Crear backup
+docker exec mongodb mongodump --out /data/backup
+
+# Copiar backup al host
+docker cp mongodb:/data/backup ./backup-$(date +%Y%m%d)
+```
+
+### Restaurar MongoDB
+```bash
+# Copiar backup al contenedor
+docker cp ./backup mongodb:/data/restore
+
+# Restaurar
+docker exec mongodb mongorestore /data/restore
+```
+
+## Gestión de Contenedores
+
+### Ver estado
+```bash
+docker-compose ps
+```
+
+### Reiniciar servicios
+```bash
+# Todos los servicios
+docker-compose restart
+
+# Servicio específico
+docker-compose restart app
+```
+
+### Detener servicios
+```bash
+# Detener sin eliminar
+docker-compose stop
+
+# Detener y eliminar contenedores
+docker-compose down
+
+# Detener y eliminar volúmenes
+docker-compose down -v
+```
+
+### Ver recursos
+```bash
+# Uso de CPU/Memoria
+docker stats
+
+# Espacio en disco
+docker system df
+```
+
+### Limpiar sistema
+```bash
+# Eliminar contenedores detenidos
+docker container prune
+
+# Eliminar imágenes no usadas
+docker image prune
+
+# Limpieza completa
+docker system prune -a
+```
+
+## Despliegue
+
+### Build nueva versión
+```bash
+cd backend
+
+# Ejecutar pruebas
+npm test
+
+# Build imagen
+docker build -t devops-app:v1.0.0 .
+
+# Publicar a Docker Hub
+docker tag devops-app:v1.0.0 usuario/devops-app:v1.0.0
+docker push usuario/devops-app:v1.0.0
+```
+
+### Actualizar contenedor
+```bash
+cd infra
+
+# Descargar nueva imagen
+docker-compose pull
+
+# Recrear contenedores
+docker-compose up -d --force-recreate
+```
+
+### Rollback
+```bash
+# Ver imágenes disponibles
+docker images | grep devops-app
+
+# Cambiar tag en docker-compose.yml
+# app:
+#   image: usuario/devops-app:v0.9.0
+
+# Reiniciar con versión anterior
+docker-compose up -d
+```
+
+## Troubleshooting
+
+### Aplicación no responde
+
+#### 1. Verificar contenedor
+```bash
+docker-compose ps
+```
+
+#### 2. Ver logs
+```bash
+docker-compose logs app
+```
+
+#### 3. Reintentar
+```bash
+docker-compose restart app
+```
+
+#### 4. Recrear
+```bash
+docker-compose up -d --force-recreate app
+```
+
+### MongoDB no conecta
+
+#### Verificar red Docker
+```bash
+docker network ls
+docker network inspect infra_default
+```
+
+#### Verificar DNS
+```bash
+docker-compose exec app ping db
+```
+
+#### Reiniciar MongoDB
+```bash
+docker-compose restart db
+```
+
+### Memoria insuficiente
+
+#### Ver uso actual
+```bash
+docker stats --no-stream
+```
+
+#### Aumentar límites
+Edita `docker-compose.yml`:
+```yaml
+app:
+  mem_limit: 512m
+  mem_reservation: 256m
+```
+
+#### Limpiar recursos
+```bash
+docker system prune -a --volumes
+```
+
+### Puerto ocupado
+
+#### Identificar proceso
+```bash
+# Linux/Mac
+lsof -ti:3000
+
+# Windows
+netstat -ano | findstr :3000
+```
+
+#### Liberar puerto
+```bash
+# Linux/Mac
+lsof -ti:3000 | xargs kill -9
+
+# Windows
+taskkill /PID <PID> /F
+```
+
+### Error en build
+
+#### Limpiar caché
+```bash
+docker-compose build --no-cache
+```
+
+#### Verificar Dockerfile
+```bash
+docker build --progress=plain -t test ./backend
+```
+
+## Seguridad
+
+### Actualizar dependencias
+```bash
+cd backend
+
+# Ver vulnerabilidades
+npm audit
+
+# Corregir automáticamente
+npm audit fix
+
+# Actualizar paquetes
+npm update
+```
+
+### Rotar secrets
+1. Generar nuevo token en Docker Hub
+2. Actualizar secret en GitHub
+3. Re-ejecutar pipeline
+
+### Variables de entorno sensibles
+```bash
+# Nunca commitear .env
+# Usar secrets de GitHub Actions
+# Usar Docker secrets en producción
+```
+
+## Backup y Recuperación
+
+### Backup completo
+```bash
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+
+# Backup MongoDB
+docker exec mongodb mongodump --out /data/backup
+
+# Backup volúmenes
+docker run --rm -v infra_dbdata:/data -v $(pwd):/backup \
+  alpine tar czf /backup/dbdata_${DATE}.tar.gz /data
+
+# Backup configuración
+tar czf config_${DATE}.tar.gz infra/
+```
+
+### Recuperación
+```bash
+# Restaurar MongoDB
+docker cp backup_20240115.tar.gz mongodb:/data/
+docker exec mongodb mongorestore /data/backup
+
+# Restaurar volúmenes
+docker run --rm -v infra_dbdata:/data -v $(pwd):/backup \
+  alpine tar xzf /backup/dbdata_20240115.tar.gz -C /
+```
+
+## Contactos de Emergencia
+
+### Equipo DevOps
+- **Triana García**: triana@ejemplo.com
+- **Adonis Mercedes**: adonis@ejemplo.com
+- **Kaysha Hiciano**: kaysha@ejemplo.com
+- **Esmerlyn Ledesma**: esmerlyn@ejemplo.com
+
+### Escalación
+1. Revisar logs y métricas
+2. Consultar documentación
+3. Contactar al equipo
+4. Escalar a instructor/supervisor
+
+## Mantenimiento Programado
+
+### Semanal
+- [ ] Revisar logs de errores
+- [ ] Verificar uso de disco
+- [ ] Actualizar dependencias menores
+- [ ] Backup de base de datos
+
+### Mensual
+- [ ] Actualizar imágenes base
+- [ ] Revisar métricas de Prometheus
+- [ ] Limpiar contenedores/imágenes antiguas
+- [ ] Rotar logs
+
+### Trimestral
+- [ ] Actualizar versiones mayores
+- [ ] Auditoría de seguridad
+- [ ] Revisión de capacidad
+- [ ] Test de recuperación ante desastres

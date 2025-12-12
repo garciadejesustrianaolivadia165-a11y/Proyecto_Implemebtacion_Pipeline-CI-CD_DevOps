@@ -1,0 +1,353 @@
+# Guía de Contribución
+
+## Cómo Contribuir
+
+### 1. Fork y Clone
+```bash
+# Fork el repositorio en GitHub
+# Luego clonar tu fork
+git clone https://github.com/tu-usuario/Proyecto_Implemebtacion_Pipeline-CI-CD_DevOps.git
+cd Proyecto_Implemebtacion_Pipeline-CI-CD_DevOps/Proyecto_Final_DevOps
+```
+
+### 2. Crear Branch
+```bash
+# Crear branch desde develop
+git checkout develop
+git pull origin develop
+git checkout -b feature/nombre-feature
+```
+
+### 3. Desarrollar
+```bash
+# Hacer cambios
+# Probar localmente
+cd backend
+npm test
+npm run lint
+```
+
+### 4. Commit
+```bash
+git add .
+git commit -m "feat: descripción del cambio"
+```
+
+### 5. Push y PR
+```bash
+git push origin feature/nombre-feature
+# Crear Pull Request en GitHub
+```
+
+## Estándares de Código
+
+### JavaScript
+
+#### Estilo
+- Usar comillas simples `'`
+- Punto y coma obligatorio `;`
+- Indentación 2 espacios
+- Líneas máximo 80 caracteres
+
+#### Ejemplo
+```javascript
+const getUserName = (user) => {
+  if (!user) {
+    return 'Guest';
+  }
+  return user.name;
+};
+```
+
+### Nombres
+
+#### Variables y Funciones: camelCase
+```javascript
+const userName = 'John';
+function getUserData() { }
+```
+
+#### Clases: PascalCase
+```javascript
+class UserService { }
+```
+
+#### Constantes: UPPER_SNAKE_CASE
+```javascript
+const MAX_RETRY_COUNT = 3;
+```
+
+### Comentarios
+
+#### Funciones complejas
+```javascript
+/**
+ * Calcula el promedio de un array de números
+ * @param {number[]} numbers - Array de números
+ * @returns {number} Promedio
+ */
+function calculateAverage(numbers) {
+  // ...
+}
+```
+
+#### Bloques de código
+```javascript
+// Solo cuando sea necesario explicar lógica compleja
+if (condition) {
+  // Razón de esta validación especial
+}
+```
+
+## Git Workflow
+
+### Branch Strategy
+
+```
+main
+  ?? develop
+  ?     ?? feature/login
+  ?     ?? feature/dashboard
+  ?     ?? bugfix/api-error
+  ?? hotfix/critical-bug
+```
+
+### Nombres de Branch
+- `feature/nombre`: Nuevas funcionalidades
+- `bugfix/nombre`: Corrección de bugs
+- `hotfix/nombre`: Correcciones urgentes
+- `docs/nombre`: Solo documentación
+- `test/nombre`: Añadir pruebas
+
+### Conventional Commits
+
+#### Formato
+```
+<tipo>(<scope>): <descripción>
+
+[cuerpo opcional]
+
+[footer opcional]
+```
+
+#### Tipos
+- `feat`: Nueva funcionalidad
+- `fix`: Corrección de bug
+- `docs`: Solo documentación
+- `style`: Formato, sin cambios de código
+- `refactor`: Refactorización
+- `test`: Añadir pruebas
+- `chore`: Mantenimiento
+
+#### Ejemplos
+```bash
+feat(api): add user authentication endpoint
+fix(frontend): resolve button click event
+docs(readme): update installation steps
+test(auth): add unit tests for login
+```
+
+## Testing
+
+### Requisitos
+- ? Cobertura mínima: 50%
+- ? Todas las pruebas deben pasar
+- ? Incluir pruebas para nuevo código
+
+### Tipos de Pruebas
+
+#### Unitarias
+```javascript
+// tests/unit/math.test.js
+describe('Math Utils', () => {
+  test('suma correctamente', () => {
+    expect(add(2, 3)).toBe(5);
+  });
+});
+```
+
+#### Integración
+```javascript
+// tests/integration/api.test.js
+test('GET /api/hello responde correctamente', async () => {
+  const response = await request(app).get('/api/hello');
+  expect(response.statusCode).toBe(200);
+});
+```
+
+### Ejecutar Pruebas
+```bash
+# Todas las pruebas
+npm test
+
+# Con cobertura
+npm test -- --coverage
+
+# Solo un archivo
+npm test -- math.test.js
+
+# En modo watch
+npm test -- --watch
+```
+
+## Code Review
+
+### Checklist del Revisor
+- [ ] Código sigue estándares del proyecto
+- [ ] Pruebas incluidas y pasan
+- [ ] Sin errores de lint
+- [ ] Documentación actualizada
+- [ ] Commits siguen convención
+- [ ] Branch actualizado con develop
+- [ ] Sin conflictos
+
+### Checklist del Autor
+- [ ] Código auto-revisado
+- [ ] Pruebas ejecutadas localmente
+- [ ] Lint sin errores
+- [ ] Commits organizados
+- [ ] PR con descripción clara
+- [ ] Screenshots si aplica
+
+## CI/CD
+
+### Pre-commit (Local)
+```bash
+# Ejecutar antes de commit
+npm run lint
+npm test
+```
+
+### Pipeline Automático
+Al hacer push, el pipeline ejecuta:
+1. Install dependencies
+2. Lint
+3. Tests
+4. Build Docker (solo en main)
+
+## Documentación
+
+### README
+- Mantener actualizado
+- Incluir ejemplos
+- Añadir badges relevantes
+
+### Código
+- JSDoc para funciones públicas
+- Comentarios para lógica compleja
+- Evitar comentarios obvios
+
+### Docs/
+- Crear archivos markdown para guías
+- Actualizar al cambiar funcionalidad
+- Incluir ejemplos de uso
+
+## Issues y Bugs
+
+### Reportar Bug
+
+#### Template
+```markdown
+**Descripción**
+Descripción clara del bug
+
+**Pasos para Reproducir**
+1. Ir a '...'
+2. Click en '...'
+3. Ver error
+
+**Comportamiento Esperado**
+Lo que debería pasar
+
+**Comportamiento Actual**
+Lo que pasa actualmente
+
+**Screenshots**
+Si aplica
+
+**Entorno**
+- OS: [e.g. Windows 10]
+- Node: [e.g. 18.15.0]
+- Browser: [e.g. Chrome 120]
+```
+
+### Solicitar Feature
+
+#### Template
+```markdown
+**Descripción**
+Descripción clara de la feature
+
+**Problema que Resuelve**
+Por qué es necesaria
+
+**Solución Propuesta**
+Cómo implementarla
+
+**Alternativas Consideradas**
+Otras opciones
+
+**Información Adicional**
+Contexto extra
+```
+
+## Releases
+
+### Versionado (Semantic Versioning)
+```
+MAJOR.MINOR.PATCH
+```
+
+- **MAJOR**: Cambios incompatibles
+- **MINOR**: Nueva funcionalidad compatible
+- **PATCH**: Correcciones compatibles
+
+### Proceso de Release
+```bash
+# 1. Actualizar versión
+npm version minor # o major/patch
+
+# 2. Crear tag
+git tag -a v1.2.0 -m "Release v1.2.0"
+
+# 3. Push con tags
+git push origin develop --tags
+
+# 4. Merge a main
+git checkout main
+git merge develop
+git push origin main
+
+# 5. Crear GitHub Release
+# Ir a GitHub ? Releases ? Create Release
+```
+
+## Contacto
+
+### Preguntas
+- Crear issue con label `question`
+- Contactar al equipo por correo
+- Discusiones en GitHub Discussions
+
+### Equipo
+- **Triana García** - Backend/DevOps
+- **Adonis Mercedes** - Frontend/Testing
+- **Kaysha Hiciano** - Database/Docs
+- **Esmerlyn Ledesma** - CI/CD/Monitoring
+
+## Recursos
+
+### Guías de Estilo
+- [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
+- [Conventional Commits](https://www.conventionalcommits.org/)
+- [Semantic Versioning](https://semver.org/)
+
+### Herramientas
+- [ESLint](https://eslint.org/)
+- [Jest](https://jestjs.io/)
+- [Supertest](https://github.com/visionmedia/supertest)
+- [Docker](https://docs.docker.com/)
+
+---
+
+¡Gracias por contribuir! ??

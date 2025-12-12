@@ -1,0 +1,148 @@
+﻿# ?? INICIO RÁPIDO - 5 MINUTOS
+
+## ? Instalación Express
+
+### Windows
+```cmd
+instalar.bat
+```
+
+### Linux/Mac
+```bash
+chmod +x instalar.sh
+./instalar.sh
+```
+
+## ?? O Manualmente
+
+```bash
+# 1. Instalar dependencias
+cd Proyecto_Final_DevOps/backend
+npm install
+
+# 2. Ejecutar pruebas
+npm test
+
+# 3. Ejecutar linting
+npm run lint
+
+# 4. Probar aplicación
+npm run dev
+# Abre http://localhost:3000
+```
+
+## ?? Con Docker
+
+```bash
+cd Proyecto_Final_DevOps/infra
+docker-compose up
+```
+
+Servicios:
+- **App**: http://localhost:3000
+- **Prometheus**: http://localhost:9090
+
+## ?? Configurar GitHub Actions
+
+### 1. Docker Hub
+1. Crea cuenta en https://hub.docker.com
+2. Ve a Settings ? Security ? New Access Token
+3. Copia el token
+
+### 2. GitHub Secrets
+1. Ve a tu repo ? Settings ? Secrets ? Actions
+2. Agregar:
+   - `DOCKER_USERNAME` = tu_usuario
+   - `DOCKER_PASSWORD` = tu_token
+
+## ?? Publicar
+
+```bash
+git add .
+git commit -m "feat: completar pipeline DevOps"
+git push origin main
+```
+
+Luego ve a GitHub ? Actions para ver el pipeline.
+
+## ?? Documentación Completa
+
+Para más detalles, lee:
+- **Todo el proceso**: `PASOS_COMPLETAR.md`
+- **Instalación**: `docs/INSTALLATION.md`
+- **Pipeline**: `docs/PIPELINE.md`
+- **Presentación**: `docs/PRESENTATION.md`
+
+## ? Checklist Rápido
+
+- [ ] Instalar dependencias (`npm install`)
+- [ ] Ejecutar tests (`npm test`)
+- [ ] Ejecutar lint (`npm run lint`)
+- [ ] Probar app local (`npm run dev`)
+- [ ] Crear cuenta Docker Hub
+- [ ] Agregar secrets en GitHub
+- [ ] Push a GitHub
+- [ ] Verificar pipeline
+- [ ] Crear slides de presentación
+
+## ?? Archivos Creados
+
+```
+? 21 ARCHIVOS NUEVOS/ACTUALIZADOS:
+
+Pipeline CI/CD:
+  ? .github/workflows/ci-cd.yml
+
+Backend (9):
+  ? .eslintrc.js
+  ? jest.config.js
+  ? .dockerignore
+  ? src/routes/health.js
+  ? src/routes/index.js
+  ? src/utils/math.js
+  ? tests/unit/math.test.js
+  ? tests/integration/app.test.js
+  ? package.json (actualizado)
+  ? Dockerfile (actualizado)
+
+Frontend (2):
+  ? styles.css
+  ? app.js
+
+Docs (5):
+  ? INSTALLATION.md
+  ? PIPELINE.md
+  ? OPERATIONS.md
+  ? CONTRIBUTING.md
+  ? PRESENTATION.md
+
+General (4):
+  ? .gitignore
+  ? README.md (actualizado)
+  ? PASOS_COMPLETAR.md
+  ? RESUMEN_COMPLETADO.md
+```
+
+## ?? Tips
+
+- **Tests**: Siempre ejecuta `npm test` antes de push
+- **Lint**: Usa `npm run lint` para código limpio
+- **Docker**: Prueba con `docker-compose up` antes del deploy
+- **Docs**: Lee `PASOS_COMPLETAR.md` para el proceso completo
+
+## ?? Problemas?
+
+1. Lee el troubleshooting en `docs/OPERATIONS.md`
+2. Revisa los logs: `npm test -- --verbose`
+3. Verifica la estructura de carpetas
+4. Consulta `PASOS_COMPLETAR.md`
+
+## ?? ¡Éxito!
+
+Tu proyecto está **80% completo**.
+
+Solo falta:
+- ? Crear slides (usa `docs/PRESENTATION.md`)
+- ? Practicar demo
+
+**¡A presentar!** ??
